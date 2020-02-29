@@ -5,4 +5,5 @@ to work with the EMG armband) and darknet that is used as the framework for trai
 
 
 
-
+![Overall Setup](master/3DTest.png)
+https://github.com/giuliocampagna/Shape-Based-Grasping-Techniques-with-Eye-Tracking-Device/blob/master/Overall_Setup.png
