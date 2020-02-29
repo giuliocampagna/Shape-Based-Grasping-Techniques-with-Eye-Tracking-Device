@@ -3,7 +3,5 @@ The eye tracking algorithm allows to detect our pupil position, and then what ou
 All the project is performed in Ubuntu 16.04 LTS (Xenial). Basically it has been used Anaconda that is a free and open source distribution of the programming language Python used in Machine Learning, which aims to simplify the management of the packages. Through it we have created a virtual environment within all the necessary libraries (e.g OpenCV). After we have installed Pupil, the myo library (in order
 to work with the EMG armband) and darknet that is used as the framework for training YOLO, meaning it sets the architecture of the network. In the end, to connect everything we have installed ROS, an open-source, meta-operating system for robotic systems.
 
+![Alt text](https://github.com/giuliocampagna/Shape-Based-Grasping-Techniques-with-Eye-Tracking-Device/blob/master/Overall_Setup.png "Overall Setup") 
 
-
-![Overall Setup](master/3DTest.png)
-https://github.com/giuliocampagna/Shape-Based-Grasping-Techniques-with-Eye-Tracking-Device/blob/master/Overall_Setup.png
