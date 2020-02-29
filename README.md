@@ -5,4 +5,4 @@ to work with the EMG armband) and darknet that is used as the framework for trai
 
 
 
-![Image description](Overall_setup)
+
