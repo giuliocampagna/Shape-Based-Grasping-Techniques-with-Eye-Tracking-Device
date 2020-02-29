@@ -1,0 +1,1790 @@
+I WILL START DESCRIBING THE FINAL PROCEDURE WHERE THERE ARE ALL THE NODES INTERCONNECTED.
+THEN IT WILL BE DESCRIBED THE SEVERAL INSTALLATIONS AND SETUPS OF THE DIFFERENT DEVICES
+
+- PROCEDURE
+---> Creation of a node where we control if we are really looking at the object of interest in 
+     order to grasp it. The resolution of the camera is 640x480.
+     ---> Go to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+          and create file object_prediction.py
+---> Final node that take information from the EMG armband (state of the hand) and the object 
+     recognised
+     ---> Go to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+          and create file grasp_prediction.py
+---> Create some images about grasping the three objects and download image of a banana, image of 
+     an orange, image of a fork and put everything in /home/destiny/anaconda3/envs/
+     virtual_environment/catkin_ws/src
+
+---> ALL NODES THAT WORK TOGETHER:
+---> Go to directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet_ros/config
+---> Open ros.yaml and modify the following thing:
+---> camera_reading:
+     topic: /camera/rgb/image_raw
+     in
+     camera_reading:
+     topic: /usb_cam/image_raw
+     (IF I HAVE DECIDED TO USE A NORMAL CAMERA INSTEAD OF PUPIL,
+      OTHERWISE PUT TOPIC RELATED TO PUPIL, SEE THE NAME DOING ROSTOPIC LIST)
+---> IF I WANT TO USE ANOTHER CAMERA:
+     ---> Go to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/usb_cam/launch
+          ---> Open usb_cam-test.launch and change value="/dev/video0" with
+               value="/dev/video1" and save (1 IS THE FLAG ASSOCIATED WITH DESIRED DEVICE)
+---> Keep the Bluetooth adapter connected with the computer and wear the EMG armband
+     with LOGO LED part positioned on the anterior part of the forearm with the STATUS LED
+     part looking to fingers
+---> To connect Myo EMG Armband tap the LOGO LED to the Bluetooth Adapter!
+---> If we had to work with PUPIL we had to open it and do the calibration
+     ----> In one terminal:
+           ---> roscore
+     ----> In another terminal:
+           ---> source activate virtual_environment
+           ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/usb_cam/launch
+           ---> roslaunch usb_cam usb_cam-test.launch
+     ----> In another terminal:
+           ---> source activate virtual_environment
+           ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/scripts
+           ---> sudo chmod 777 /dev/ttyACM0 (to allow receiving data from EMG armband)
+           ---> rosrun ros_myo myo-rawNode.py (or run with python myo-rawNode.py)
+     ---> In another terminal:
+        ---> source activate virtual_environment
+        ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/scripts
+        ---> sudo chmod +x prediction.py
+        ---> python prediction.py
+     ----> In another terminal:
+           ---> source activate virtual_environment
+           ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+                darknet_ros/launch
+           ---> roslaunch darknet_ros darknet_ros.launch
+     ----> In another terminal:
+           ---> rostopic list
+     ----> In another terminal:
+           ---> source activate virtual_environment
+           ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+           ---> python object_prediction.py
+     ----> In another terminal:
+           ---> source activate virtual_environment
+           ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+           ---> python grasp_prediction.py
+
+
+
+
+- EYE TRACKING DEVICE
+This is the guide to install Pupil Eye Tracking device:
+- go to the site https://github.com/pupil-labs/pupil/blob/master/docs/dependencies-ubuntu17.md to install all libraries
+
+
+---> EVERY TIME WE NEED TO WORK WITH ANACONDA DO THE FOLLOWING EXPORTS ON THE SHELL:
+---> export PYTHONPATH="/home/destiny/anaconda3/envs/virtual_environment/lib/python3.6/site-
+     packages:$PYTHONPATH"
+---> export PYTHONPATH="/home/destiny/anaconda3/envs/virtual_environment/lib/python3.6: 
+     $PYTHONPATH"
+
+
+- Python
++ You will need a version of Python 3.6 or above. 
++ cd /home/destiny/anaconda3/envs/virtual_environment
++ source activate virtual_environment
++ conda install python==3.6
++ Due to the new installation of python, install again the packages and then check if they are
+  correctly installed typing "python" and then "import name_package":
+  --> pip install tensorflow==1.5
+  --> pip install opencv-python   (import cv2)
+    * After I installed ROS kinetic, and open python3 and run import cv2, got the error:
+      ImportError: /opt/ros/kinetic/lib/python2.7/dist-packages/cv2.so: undefined symbol: 
+      PyCObject_Type   
+    * To solve this do the following thing:
+           ---> export PYTHONPATH="/home/destiny/anaconda3/envs/virtual_environment/lib/python3.6/
+                site-packages:$PYTHONPATH" 
+  --> pip install matplotlib
+  --> pip install pillow  (import PIL)
+  --> pip install kiwisolver
+
+
+- 7-Zip
++ Install 7-zip to extract files.
+
+
+- General Setup
++ cd /home/destiny/anaconda3/envs/virtual_environment
++ source activate virtual_environment
+---> sudo apt-get update
+---> sudo apt install -y pkg-config git cmake build-essential nasm wget python3-setuptools 
+     libusb-1.0-0-dev  python3-dev python3-pip python3-numpy python3-scipy libglew-dev libglfw3-dev
+     libtbb-dev
+
+
+- ffmpeg3
++ cd /home/destiny/anaconda3/envs/virtual_environment
++ source activate virtual_environment
++ Install ffmpeg3 from jonathonf's ppa:
+---> sudo add-apt-repository ppa:jonathonf/ffmpeg-3
+---> sudo apt-get update
+---> sudo apt install -y libavformat-dev libavcodec-dev libavdevice-dev libavutil-dev
+     libswscale-dev libavresample-dev ffmpeg libav-tools x264 x265 libportaudio2
+     portaudio19-dev
+
+
+- OpenCV Libraries
++ cd /home/destiny/anaconda3/envs/virtual_environment
++ source activate virtual_environment
+---> cwd=$(pwd) (Save current working directory)
+---> sudo apt -y install build-essential checkinstall cmake pkg-config yasm
+---> sudo apt -y install git gfortran
+---> sudo apt -y install libjpeg8-dev libjasper-dev libpng12-dev
+---> sudo apt -y install libtiff5-dev
+---> sudo apt -y install libtiff-dev
+---> sudo apt -y install libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev
+---> sudo apt -y install libxine2-dev libv4l-dev
+---> cd /usr/include/linux
+---> sudo ln -s -f ../libv4l1-videodev.h videodev.h
+---> cd $cwd
+---> sudo apt -y install libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev
+---> sudo apt-get install qt5-default libgtk2.0-dev libtbb-dev
+---> sudo apt-get install libatlas-base-dev
+---> sudo apt-get install libfaac-dev libmp3lame-dev libtheora-dev
+---> sudo apt-get install libvorbis-dev libxvidcore-dev
+---> sudo apt-get install libopencore-amrnb-dev libopencore-amrwb-dev
+---> sudo apt -y install libavresample-dev
+---> sudo apt-get install x264 v4l-utils
+---> sudo apt-get install libprotobuf-dev protobuf-compiler
+---> sudo apt-get install libgoogle-glog-dev libgflags-dev
+---> sudo apt-get install libgphoto2-dev libeigen3-dev libhdf5-dev doxygen
+---> sudo apt -y install python3-dev python3-pip python3-venv
+---> sudo -H pip3 install -U pip numpy
+---> sudo apt -y install python3-testresources
+---> pip install wheel numpy scipy matplotlib scikit-image scikit-learn ipython dlib
+
+
+- OpenCV
++ You will need to install OpenCV from source:
+---> pip install jinja2
+---> pip install opencv-contrib-python
+---> sudo apt-get install libatlas-base-dev gfortran pylint
+---> sudo apt-get install libgtk-3-dev
+---> sudo apt-get install libxvidcore-dev libx264-dev
+---> sudo apt-get install libopencv-dev
+---> sudo apt-get install libopencv-core-dev
++ Download opencv and opencv_contrib in the same date!
+---> wget https://github.com/opencv/opencv/archive/3.4.0.zip -O opencv-3.4.0.zip
+---> wget https://github.com/opencv/opencv_contrib/archive/3.4.0.zip -O opencv_contrib-3.4.0.zip
+---> unzip opencv-3.4.0.zip
+---> unzip opencv_contrib-3.4.0.zip
+---> cd  opencv-3.4.0
+---> mkdir build
+---> cd build
+---> cmake-gui
++ In "Where is the source code" put /home/destiny/anaconda3/envs/virtual_environment/opencv-3.4.0
++ In “Where to build the binaries” put /home/destiny/anaconda3/envs/virtual_environment/
+  opencv-3.4.0/build
++ Click on boxe advanced
++ Click on Configure
++ Use default native compilers
++ Due to the fact that some modules of opecv_contrib do no work, use the Cmake GUI to exclude
+  modules or add more from/to the build (see Adding Extra Modules from OpenCV Contrib to your
+  OpenCV build) 
++ Go to the search bar and type OPENCV_EXTRA_MODULES_PATH
++ Add the path /home/destiny/anaconda3/envs/virtual_environment/opencv_contrib-3.4.0/modules
++ Deselecting some modules: (example)
+  --> BUILD_opencv_name
++ CMAKE_CXX_FLAGS ---> -std=c++11
++ BUILD_TIFF ---> ON
++ Click on Generate  
++ Go to terminal and type Ctrl+C
+---> cd /home/destiny/anaconda3/envs/virtual_environment/opencv-3.4.0/build
+---> cmake .
+---> make 
++ If something goes wrong type "make clean" and then delete the folder build. Otherwise:
+---> sudo make install
+---> sudo ldconfig
+
+
+- Turbojpeg
++ cd /home/destiny/anaconda3/envs/virtual_environment
++ source activate virtual_environment
+---> wget -O libjpeg-turbo.tar.gz https://sourceforge.net/projects/libjpeg-turbo/files/1.5.1/
+     libjpeg-turbo-1.5.1.tar.gz/download
+---> tar xvzf libjpeg-turbo.tar.gz
+---> cd libjpeg-turbo-1.5.1
+---> ./configure --enable-static=no --prefix=/usr/local
+---> sudo make install
+---> sudo ldconfig
++ cd /home/destiny/anaconda3/envs/virtual_environment
+---> pip install PyTurboJPEG
+---> To test: from turbojpeg import TurboJPEG
+
+
+- Libuvc
++ cd /home/destiny/anaconda3/envs/virtual_environment
++ source activate virtual_environment
+---> git clone https://github.com/pupil-labs/libuvc
+---> cd libuvc
+---> mkdir build
+---> cd build
+---> cmake ..
+---> make && sudo make install
+---> sudo ldconfig
++ cd /home/destiny/anaconda3/envs/virtual_environment
+---> pip install libusb
+---> sudo ln -s /usr/lib/x86_64-linux-gnu/libturbojpeg.so.0 /usr/lib/x86_64-linux-gnu/
+     libturbojpeg.so
+---> sudo pip3 install git+https://github.com/pupil-labs/pyuvc
+---> Go to directory /home/destiny/anaconda3/envs/virtual_environment/lib/python 3.6/
+     site-packages/uvc
+---> Open file __init__.py and modify "import urlparse" in "import urllib.parse as urlparse"
+---> Open file svn.py and modify "from urlparse import urlsplit" in
+     "from urllib.parse import urlsplit"
+---> Open file commands.py and modify "from urlparse import urlparse, urlunparse" in
+     "from urllib.parse import urlparse, urlunparse"
+---> To test: import uvc
+
+
+- 3D Eye Model Dependencies
++ cd /home/destiny/anaconda3/envs/virtual_environment
++ source activate virtual_environment
+---> sudo apt install -y libgoogle-glog-dev libatlas-base-dev libeigen3-dev
+
+
+- Ceres
++ cd /home/destiny/anaconda3/envs/virtual_environment
++ source activate virtual_environment
++ You will need to build Ceres from source:
+---> sudo add-apt-repository ppa:bzindovic/suitesparse-bugfix-1319687
+---> sudo apt-get update
+---> sudo apt-get install libsuitesparse-dev
+
++ If add-apt-repository is not found, install the following package first:
+---> sudo apt-get install software-properties-common
+
++ Dependencies:
+---> sudo apt-get install cmake
+---> sudo apt-get install libgoogle-glog-dev
+---> sudo apt-get install libatlas-base-dev
+---> sudo apt-get install libeigen3-dev
++ Go to site http://eigen.tuxfamily.org/index.php?title=Main_Page
+---> git clone https://gitlab.com/libeigen/eigen.git
+---> cd eigen
+---> mkdir build
+---> cd build
+---> cmake ..
+---> make && sudo make install
+---> sudo ldconfig
++ cd /home/destiny/anaconda3/envs/virtual_environment
+---> conda install eigen
++ To test: import eigen
+
++ Then build and install the Ceres solver:
+---> git clone https://ceres-solver.googlesource.com/ceres-solver
+---> cd ceres-solver
+---> mkdir build && cd build
+---> cmake .. -DBUILD_SHARED_LIBS=ON
+---> make -j3
+---> make test
+---> sudo make install
+---> sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/ceres.conf'
+---> sudo ldconfig
++ cd /home/destiny/anaconda3/envs/virtual_environment
+---> sudo apt-get install python-ceres
+---> conda install -c conda-forge ceres-solver 
+---> sudo apt-get install libceres-dev
++ To see if ceres works:
+---> /home/destiny/anaconda3/envs/virtual_environment/ceres-solver/build/bin/
+     simple_bundle_adjuster /home/destiny/anaconda3/envs/virtual_environment/ceres-solver/data/
+     problem-16-22106-pre.txt
+
+
+- Install Python Libraries
++ cd /home/destiny/anaconda3/envs/virtual_environment
++ source activate virtual_environment
+---> python -m pip install --upgrade pip
+---> pip install cysignals
+---> pip install cython
+---> pip install msgpack==0.5.6
+---> pip install numexpr
+---> pip install packaging
+---> pip install psutil
+---> pip install pyaudio
+---> pip install pyopengl
+     ---> from OpenGL.GL import *
+---> pip install pyzmq
+     ---> import zmq
+---> pip install scipy
+---> pip install git+https://github.com/zeromq/pyre
+---> pip install pyre-check
+---> pip install pupil-apriltags
+     ---> from pupil_apriltags import Detector
+---> conda install -c conda-forge requirements-detector 
+---> git clone https://github.com/pupil-labs/pupil-detectors.git
+     ---> cd pupil-detectors
+     ---> pip install -e .[dev]
+     ---> cd /home/destiny/anaconda3/envs/virtual_environment
+     ---> pip install opencv-python==3.4.0.12 
+     ---> Go to File, Home, search bar and delete everything related to opencv4 and libopencv4
+          files
+     ---> Cancel cv2 folder , cv2.so , cv2.cpython-36m-x86_64-linux-gnu referred to 4.1
+     ---> ln -s /usr/local/lib/libopencv_core.so.3.4.0
+     ---> sudo ldconfig
+     ---> pip uninstall opencv-python 
+     ---> cancel pupil_detectors folder and install it again
+     ---> pip install opencv-python==3.4.0.12
+     ---> pip install cmake
+     ---> hash -r (clean cache)
+     ---> uninstall ceres deleting the folder in virtual_environment
+     ---> conda uninstall ceres-solver
+     ---> Go to site https://github.com/ceres-solver/ceres-solver/releases
+     ---> download zip ceres-solver 1.13.0
+     ---> Rename it into ceres-solver and put it into virtual_environment
+     ---> Install ceres following the guide
+     ---> Uninstall pupil-detectors deleting folder and install it again
+     ---> import pupil_detectors
+---> pip install git+https://github.com/pupil-labs/PyAV
+---> pip install git+https://github.com/pupil-labs/pyglui
+---> pip install nslr
+---> pip install git+https://github.com/pupil-labs/nslr
+---> pip install git+https://github.com/pupil-labs/nslr-hmm
+---> cd /usr/lib/x86_64-linux-gnu and from terminal type:
+     ---> sudo rm -r libturbojpeg.a
+---> Go to site https://github.com/FFmpeg/FFmpeg/releases
+---> download zip FFmpeg 3.4.7
+---> Rename it into FFmpeg and put it into virtual_environment
+---> Open file INSTALL. md
+---> In the terminal type:
+     ---> ./configure
+     ---> make
+     ---> sudo make install
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+---> git clone https://github.com/pupil-labs/pyndsi.git
+---> cd pyndsi
+---> python -m pip install -r requirements.txt
+     ---> cd /home/destiny/anaconda3/envs/virtual_environment
+     ---> conda install numpy
+     ---> import ndsi
+---> pip install git+https://github.com/pupil-labs/pyuvc
+     ---> import uvc
+
+- Pupil
+---> conda install pytest
+---> pip install configargparse
+---> pip install pytest==4.6.9
+---> pip install pytest (5.3.2 is the last version at the moment!)
+---> git clone https://github.com/pupil-labs/pupil.git
+---> if i try to do python main.py capture, it will giv an error saying unxpected keyword
+     allow_abbrev . This because inside site packages, the file argparse.py does not contain
+     this function. Instead inside the folder python3.6 there is a file argparse.py (belonging to
+     Standard library) that contain the function. Hence:
+---> export PYTHONPATH="/home/destiny/anaconda3/envs/virtual_environment/lib/python3.6:
+     $PYTHONPATH"
+---> sudo apt-get purge libglfw3 libglfw3-dev
+---> sudo apt-get purge libglfw2
+---> pip install glfw
+---> sudo apt-get install libglfw3 libglfw3-dev
+---> sudo ln -s /home/destiny/anaconda3/envs/virtual_environment/lib/python3.6/
+     site-packages/glfw libglfw.so
+---> sudo ldconfig
+---> Put file "libglfw.so" in /home/destiny/anaconda3/envs/virtual_environment/pupil/pupil_src/
+     shared_modules
+---> sudo chmod 777 /usr/local/lib
+---> Put file "libglfw.so" in /usr/local/lib
+---> sudo ln -s /usr/local/lib libglfw.so
+---> sudo ldconfig
+---> Go to site https://www.glfw.org/download.html
+---> Put the folder glfw-3.3.1 into virtual_environment
+---> mkdir build
+---> cd build
+---> cmake-gui
++ In "Where is the source code" put /home/destiny/anaconda3/envs/virtual_environment/glfw-3.3.1
++ In “Where to build the binaries” put /home/destiny/anaconda3/envs/virtual_environment/
+  glfw-3.3.1/build
++ Click on boxe advanced
++ Click on Configure
++ Use default native compilers
++ BUILD_SHARED_LIBS ---> ON
++ Click on Generate  
++ Go to terminal and type Ctrl+C
+---> cd /home/destiny/anaconda3/envs/virtual_environment/glfw-3.3.1/build
+---> cmake .
+---> make 
+---> sudo make install
+---> sudo ldconfig
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+---> Put file libglfw.so. 3 and libglfw.so.3.3 in /home/destiny/anaconda3/envs/virtual_environment
+     /pupil/pupil_src/shared_modules 
+---> pip uninstall glfw
+---> cd pupil
+---> cd pupil_src
+---> python main.py capture
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+
+
+- CALIBRATION EYE TRACKER
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/pupil/pupil_src
+---> export PYTHONPATH="/home/destiny/anaconda3/envs/virtual_environment/lib/python3.6/site-
+     packages:$PYTHONPATH"
+---> export PYTHONPATH="/home/destiny/anaconda3/envs/virtual_environment/lib/python3.6: 
+     $PYTHONPATH"
+---> python main.py capture
+---> Go to General, Click on Detect eye0, Detect eye1
+---> To calibrate go to Pupil Capture-World and press on C and look then where there are the 
+     points
+
+
+- PUPIL DRIVERS
+---> Go to https://pupil-labs.com/products/core/
+---> Search download the latest software, desktop software, linux.
+---> From "Scaricati" rename the unzipped folder into "pupil_drivers" and then copy it to:
+     ---> /home/destiny/anaconda3/envs/virtual_environment
+---> Go to /home/destiny/anaconda3/envs/virtual_environment/pupil_drivers and you will find three
+     packages
+---> Install each one in this way:
+     ---> Right click, open with, Gdebi, install package
+
+
+* ROS (Setup for Eye tracker and Thalmic EMG myo armband) :
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+---> source activate virtual_environment
+---> pip install rospkg (import rospy)
+---> sudo apt-get install python-catkin-tools python3-dev python3-catkin-pkg-modules
+     python3-numpy python3-yaml ros-kinetic-cv-bridge
+---> pip3 install rospkg catkin_pkg
+---> sudo apt-get install python-rospkg
+---> pip install pyyaml
+---> sudo pip3 install rospkg catkin_pkg
+---> pip install catkin_pkg
+---> sudo apt-get install python3-pip python3-yaml
+---> sudo apt-get install python-catkin-tools python3-dev python3-numpy
+---> pip install --upgrade pip
+---> sudo apt install --reinstall python-catkin-pkg-modules  (import catkin_pkg)
+
++ Environment setup:
+---> Remove folder catkin_ws from HOME (if you created it there) and the path of ROS at the of 
+     the file .bashrc
+---> Open new terminal and type:
+     ---> source ~/.bashrc
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+---> source activate virtual_environment
+---> It's convenient if the ROS environment variables are automatically added to your bash
+     session every time a new shell is launched:
+---> echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
+---> source ~/.bashrc
+---> Dependencies for building packages:
+---> Up to now you have installed what you need to run the core ROS packages. To create and
+     manage your own ROS workspaces, there are various tools and requirements that are
+     distributed separately.
+     For example, rosinstall is a frequently used command-line tool that enables you to easily
+     download many source trees for ROS packages with one command. 
+---> sudo apt install python-rosinstall python-rosinstall-generator python-wstool build-essential
+
++ ROS Workspace:
+---> mkdir -p /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+---> catkin_init_workspace
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+---> catkin config -DPYTHON_EXECUTABLE=/home/destiny/anaconda3/envs/virtual_environment/bin/
+     python -DPYTHON_INCLUDE_DIR=/home/destiny/anaconda3/envs/virtual_environment/include/
+     python3.6m -DPYTHON_LIBRARY=/home/destiny/anaconda3/envs/virtual_environment/lib/
+     libpython3.6m.so
+---> catkin config --install
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+---> git clone -b kinetic https://github.com/ros-perception/vision_opencv.git
+---> apt-cache show ros-kinetic-cv-bridge | grep Version
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/vision_opencv
+---> git checkout 1.12.8
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+---> catkin_make
+---> catkin_make install
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/build
+---> make
+---> make install
+---> echo "source /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/devel/
+          setup.bash" >> ~/.bashrc
+---> source ~/.bashrc
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+---> source activate virtual_environment
+---> roscore (to start ROS system) . It WORKS IF i have not typed the following exports:
+---> export PYTHONPATH="/home/destiny/anaconda3/envs/virtual_environment/lib/python3.6:
+     $PYTHONPATH"
+---> export PYTHONPATH="/home/destiny/anaconda3/envs/virtual_environment/lib/python3.6/site- 
+     packages:$PYTHONPATH"
+
+
+* PUPIL AND ROS
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+---> source activate virtual_environment
+---> pip install zmq
+---> pip3 install jupyter
+---> conda install pyzmq
+---> sudo add-apt-repository ppa:smathot/cogscinl
+---> sudo apt-get update
+---> sudo apt-get install python-pygaze
+---> pip install python-pygaze
+---> sudo apt-get install sox
+---> sudo apt-get upgrade libstdc++6
+---> conda install libgcc
+---> sudo add-apt-repository ppa:ubuntu-toolchain-r/test 
+---> sudo apt-get update
+---> sudo apt-get upgrade
+---> sudo apt-get dist-upgrade
+---> To see if GLIBCXX_3.4.22 is found do:
+     ---> strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+---> git clone https://github.com/qian256/pupil_ros_plugin.git
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+---> catkin_make
+---> catkin_make install
+---> source devel/setup.bash
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+---> git clone https://github.com/personalrobotics/gazetracking.git
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+---> catkin_make
+---> catkin_make install
+---> source devel/setup.bash
+---> Open Terminator
+---> In /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/pupil_ros_plugin
+     /launch
+          ---> Open file pupil_ros.launch and replace:
+                 <!-- <node pkg="image_view" type="image_view" name="eye1" args="image:=/
+                 pupil_capture/eye/1" /> -->
+               with:
+                 <node pkg="image_view" type="image_view" name="eye1" args="image:=/
+                 pupil_capture/eye/1" /> 
+          ---> Open file pupil_ros.launch and replace:
+                  <node pkg="pupil_ros_plugin" type="pupil_zmq_ros_pub.py" name="Pupil_ZMQ_ROS"   
+                  args="localhost 50020"/>
+               with:
+                  <node pkg="pupil_ros_plugin" type="pupil_ros_pub.py" name="Pupil_ZMQ_ROS" 
+                  args="localhost 50020"/>
+
+
++ OVERVIEW ROS AND PUPIL
+---> The programs in this repository interact with Pupil eye tracking device and ROS (Robot Operating System).
+
+---> A pupil plugin at pupil_ros_plugin/plugins/pupil_ros_pub.py,
+     ---> Init a ROS node of pupil capture
+     ---> Publish pupil tracking results, gaze mapping results, and world image to ROS environment
+
+---> A ROS script at pupil_ros_plugin/scripts/pupil_zmq_ros_pub.py
+     ---> Access pupil application via ZMQ subscriber
+     ---> Init a ROS node
+     ---> Publish pupil tracking results, gaze mapping results, world image and eye image to ROS
+          environment
+
+**** The two methods achieve almost same effect, there is no need to use both of them.
+
++ PUPIL PLUGIN USAGE
+---> Start roscore
+---> Launch pupil_capture
+---> Load plugin Pupil_ROS_Bridge, Frame_Publisher, and interact with them through GUI.
+---> Look at the output rostopic echo /pupil_capture/gaze, rostopic echo /pupil_capture/pupil
+---> Use rosrun rqt_image_view rqt_image_view to see the world image.
+
+
+* ROS AND PUPIL PROPER WORKING
+---> sudo chmod 777 /opt/ros/kinetic/lib/python2.7/dist-packages
+---> Delete cv2.so
+---> conda install -c menpo glfw3 
+---> conda install -c conda-forge glfw
+---> To see if ROS and Pupil are proper working, type the following commands:
+     ---> In one terminal:
+          ---> roscore
+     ---> In another terminal:
+          ---> source activate virtual_environment
+          ---> cd /home/destiny/anaconda3/envs/virtual_environment/pupil/pupil_src
+          ---> python main.py capture
+               (IF SOMETIMES YOU CANNOT SEE BOTH EYES, JUST PLUN IN THE DEVICE AGAIN)
+     ---> In another terminal:
+          ---> source activate virtual_environment
+          ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+               pupil_ros_plugin/plugins
+          ---> chmod +x pupil_ros_pub.py
+          ---> rosrun pupil_ros_plugin pupil_ros_pub.py
+     ---> In another terminal:
+          ---> source activate virtual_environment
+          ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/pupil_ros_plugin
+               /launch
+          ---> roslaunch pupil_ros_plugin pupil_ros.launch
+     ---> In another terminal:
+          ---> rostopic list
+
+* OTHERWISE AS SECOND CHOICE USE USB_CAMERA
+---> In one terminal:
+     ---> roscore
+---> In another terminal:
+     ---> cd /home/destiny/anaconda3/envs/virtual_environment
+     ---> source activate virtual_environment
+     ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+     ---> git clone https://github.com/ros-drivers/usb_cam
+     ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+     ---> catkin_make
+     ---> catkin_make install
+     ---> source devel/setup.bash
+     ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/usb_cam/launch
+     ---> roslaunch usb_cam usb_cam-ltest.launch
+---> In another terminal:
+     ---> rostopic list
+
+
+
+- THALMIC MYO EMG ARMBAND
+---> Go to site https://github.com/roboTJ101/ros_myo
++ cd /home/destiny/anaconda3/envs/virtual_environment
++ source activate virtual_environment
+---> pip install python-csv
+---> pip install tf-nightly
+---> pip install tensorflow-probability
+---> pip uninstall tf-nightly
+---> pip uninstall keras
+---> conda install keras
+---> pip install myo
+     ---> import myo
+---> pip install pyserial
+     ---> import serial
+---> pip install enum34
+     ---> import enum
+---> pip install sklearn
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+---> git clone https://github.com/roboTJ101/ros_myo.git
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+---> catkin_make
+---> catkin_make install
+---> source devel/setup.bash
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+---> git clone https://github.com/dzhu/myo-raw.git
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+---> catkin_make
+---> catkin_make install
+---> source devel/setup.bash
+
+
+* OVERVIEW
+---> Go to site https://github.com/roboTJ101/ros_myo
+---> This ROS package creates a ROS node which publishes raw data from the Thalmic Labs Myo
+     Armband (tested with firmware version 1.1.4.2) in the form of both standard and custom ROS  
+     messages. These messages can be subscribed to and used in standard ROS architectures.
+
+* RUNNING ROS_MYO AND EXAMPLES
++ Bare Minimum
+---> To run just the node responsible for parsing raw Myo data, you will need to 
+     (with a roscore running) go to your catkin_ws and run:
+
+      ---> rosrun ros_myo myo-rawNode.py 
+
+---> This must be run separately before any other nodes run. If you try to launch any nodes that 
+     read from myo-rawNode.py topics, you will get an error as the node must establish the BT
+     protocol first. A Myo dongle does not need to be plugged in or even on to run.
+
++ Gesture Control (digital)
+---> To see an example of how you might use the Myo to control a robot using digital (on/off) 
+     gestures, and with a running myo-rawNode, run:
+
+     ---> roslaunch ros_myo turtle_pose.launch
+
+---> This will fire up a turtlesim window. Perform the SYNC GESTURE (the Myo should vibrate when 
+     successful) and then perform any of the four accepted gestures to move the turtle around the 
+     screen. The control scheme is:
+
+---> Spread fingers: move forward
+---> Make a fist: move backward
+---> Wave left: turn left
+---> Wave right: turn right
+
++ How to perform the SYNC GESTURE
+---> The sync gesture is how the Myo armband listens to your arm. When you sync, it figures out
+     its orientation in space, its position on your arm, and which arm it's on.
+---> Make sure you're wearing Myo with the USB port facing your wrist. 
+---> Gently flex your wrist away from your body. Myo will begin to vibrate when it recognizes
+     this gesture.
+---> Hold this gesture for a few seconds until Myo stops vibrating.
+---> You will know you performed the sync gesture successfully when the Thalmic Labs logo LED on 
+     the armband stops pulsing.
+---> If it needs to warm up, you will see it blink along with an notification next to the gesture 
+     indicator window in Myo Connect.
+---> Once Myo is fully warmed up and synced, you will feel three distinct vibrations.
+
++ Warm up while wearing your Myo armband
+---> Before giving a presentation or controlling software with Myo, wear it for 5 minutes. 
+---> This will warm up your device and give you optimal gesture recognition.
+---> When you put Myo on your arm, you may experience a "warm up" period that can last up to 5 
+     minutes, sometimes longer depending on skin and weather conditions. 
+---> During this time Myo is forming a strong electrical connection with the muscles in your 
+     forearm.
+---> The effect varies per person and region based on humidity.
+---> If you attempt to use Myo during the warm up period, you may notice the following changes in 
+     performance:
+
+     ---> Gestures (including the sync gesture) may require multiple attempts before they are 
+          recognized
+     ---> Gestures may be misinterpreted as others
+     ---> Custom calibration profiles configured during warm up will have reduced performance 
+          after the warm up period and will require you to create a new custom profile
+
+---> The Thalmic Labs logo LED on the Myo armband will flash during warm up and then vibrate once 
+     it is complete.
+---> If Myo is connected to your computer, Myo Connect will also display the warm up status in 
+     the gesture window.
+---> Once Myo has finished warming up, hit the re-sync Myo button and perform the sync gesture 
+     again. 
+
+
++ Gesture Control (analog)
+---> To see an example of how you might use the Myo to control a robot using analog gestures, and 
+     with a running myo-rawNode, run:
+
+     ---> roslaunch ros_myo turtle_analog.launch
+
+---> This will fire up a turtlesim window.
+---> The control of the turtle is now achieved by looking at the muscle activation in your arm.
+---> If all the muscles are very activated (signified by EMG readings > 200) then the turtle will 
+     move forward.
+---> The more activated your muscles, the faster the turtle will move (try making a fist and 
+     squeezing different amounts).
+---> The next part is a little trickier.
+
+---> The turning command is designed such that if you wave your hand to the left, the turtle will 
+     turn left, and right works the same way. 
+---> However for this to be the case, the Myo must be oriented such that the first 4 sensors are 
+     on the right, and the second 4 sensors are on the left.
+---> To position the Myo correctly on your arm, put your arm out like you are returning a 
+     handshake and then rotate the 4th sensor (the one with the glowing Thalmic logo on it) so 
+     that it is facing straight up with the charging indicator pointing towards your wrist.
+---> If you are having trouble driving the turtle, run the myo-rawNode and then
+
+     ---> run rostopic echo myo_emg
+
+     which will allow you to see the readings coming out of the Myo EMG sensors in order.
+
++ TOPICS AND MESSAGES
+---> Topics published to by myo-rawNode.py
+* /myo_arm
+  ---> This topic is where a custom Arm message is published. An Arm message looks like:
+
+  ---> uint8 arm : the arm status, enumerated as follows:
+
+       0 = UNKNOWN
+       1 = RIGHT
+       2 = LEFT
+
+  ---> uint8 xdir : the direction of the x-axis enumerated as follows:
+
+      0 = UNKNOWN
+      1 = X_TOWARD_WRIST
+      2 = X_TOWARD_ELBOW
+
+* /myo_emg
+  ---> This topic is where a custom EmgArray message is published to. An EmgArray message looks 
+       like:
+
+  ---> int16[] data : eight EMG values coming from the eight EMG sensors on the Myo Armband
+
+* /myo_gest
+  ---> This topic is where gesture messages are published. A gesture message looks like:
+
+  ---> uint8 data : An integer representing the gesture, enumerated as follows:
+
+       0 = REST
+       1 = FIST
+       2 = WAVE_IN
+       3 = WAVE_OUT
+       4 = FINGERS_SPREAD
+       5 = THUMB_TO_PINKY (this can be difficult to get)
+       255 = UNKNOWN
+
+* /myo_imu
+---> This topic is where standard Imu messages are published. For more information on Imu 
+     messages, visit the ROS Documentation. A few comments about the current implementation:
+
+---> I currently do not know the sensor covariance for the IMU on the Myo, as such this field is 
+     set to all zeros in the Imu message.
+---> While the quaternion pose and accelerometer values have been normalized, the gyro does not 
+     currently report values in rad/s as per the documentation. The values are raw from the Myo, 
+     uncalibrated.
+
++ TOPICS
+---> There are three topics generated by the myo-rawNode.py node. These are:
+
+     ---> /myo_imu - a standard IMU message with quaternion pose, accelerometer and gyro axes
+     ---> /myo_arm - Arm: a custom arm Arm message populated after calibration that shows current 
+          arm and orientation on the arm
+     ---> /myo_emg - EmgArray: a custom message that is comprised of the EMG readings from the 
+          eight sensors
+     ---> /myo_gest - Gesture data populated after calibration (UInt8 value of enumerated poses)
+
++ Dongle Device Name
+---> To use these programs, you might need to know the name of the device corresponding to the 
+     Myo dongle. 
+---> The programs will attempt to detect it automatically, but if that doesn't work, here's how 
+     to find it out manually:
+
+---> Run the command
+     ---> ls /dev/ttyACM*
+
+---> One of the names it prints (there will probably only be one) is the device.
+---> Try them each if there are multiple, or unplug the dongle and see which one disappears if
+---> you run the command again.
+---> If you get a permissions error, running sudo usermod -aG dialout $USER will probably fix it.
+
++ Included files
+* myo_raw.py (access to EMG/IMU data)
+---> myo_raw.py contains the MyoRaw class, which implements the communication protocol with a 
+     Myo.
+---> If run as a standalone script, it provides a graphical display of EMG readings as they come 
+     in.
+---> A command-line argument is interpreted as the device name for the dongle; no argument means 
+     to auto-detect. 
+---> You can also press 1, 2, or 3 on the keyboard to make the Myo perform a 
+     short, medium, or long vibration.
+
+---> To process the data yourself, you can call MyoRaw.add_emg_handler or MyoRaw.add_imu_handler; 
+     see the code for examples.
+
+---> If your Myo has firmware v1.0 and up, it also performs Thalmic's gesture classification 
+     onboard, and returns that information. 
+---> Use MyoRaw.add_arm_handler and MyoRaw.add_pose_handler.
+---> Note that you will need to perform the sync gesture after starting the program (the Myo will 
+     vibrate as normal when it is synced).
+
+* classify_myo.py (example pose classification and training program)
+---> classify_myo.py contains a very basic pose classifier that uses the EMG readings. 
+---> You have to train it yourself; make up your own poses and assign numbers (0-9) to them.
+---> As long as a number key is held down, the current EMG readings will be recorded as belonging 
+     to the pose of that number. 
+---> Any time a new reading comes in, the program compares it against the stored values to 
+     determine which pose it looks most like. 
+---> The screen displays the number of samples currently labeled as belonging to each pose, and a 
+     histogram displaying the classifications of the last 25 inputs.
+---> The most common classification among the last 25 is shown in green and should be taken as 
+     the program's best estimate of the current pose.
+
+---> This method works fine as long as the Myo isn't moved, but, in my experience, it takes quite 
+     a large amount of training data to handle different positions well.
+---> Of course, the classifier could be made much, much smarter, but I haven't had the chance to 
+     tinker with it yet.
+
+* myo.py (Myo library with built-in classifier and pose event handlers)
+---> After you've done training with classify_myo.py, the Myo class in this file can be used to 
+     notify a program each time a pose starts.
+---> If run as a standalone script, it will simply print out the pose number each time a new pose 
+     is detected.
+---> Use Myo.add_raw_pose_handler (rather than add_pose_handler) to be notified of poses from 
+     this class's classifier, rather than Thalmic's onboard processing.
+
+---> Tips for classification:
+---> make sure to only press the number keys while the pose is being held, not while your hand is 
+     moving to or from the pose
+---> try moving your hand around a little in the pose while recording data to give the program a 
+     more flexible idea of what the pose is the rest pose needs to be trained as a pose in itself
+
+
+EMG ARMBAND EXPERIMENT PROCEDURE:
+---> Keep the Bluetooth adapter connected with the computer and wear the EMG armband
+     with LOGO LED part positioned on the anterior part of the forearm with the STATUS LED
+     part looking to fingers
+---> To connect Myo EMG Armband tap the LOGO LED to the Bluetooth Adapter!
+---> KEEP IN MIND that we are using a righ prosthetic hand, hence you to wear the EMG armband with 
+     the right forearm (IMPORTANT FOR MEASUREMENTS)
+---> In one terminal:
+       ---> roscore
+---> In another terminal:
+       ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/scripts
+       ---> sudo chmod 777 /dev/ttyACM0 (to allow receiving data from EMG armband)
+       ---> rosrun ros_myo myo-rawNode.py (or run with python myo-rawNode.py)
+---> In another terminal:
+        ---> rostopic list
+        ---> rostopic echo /myo_raw/myo_emg
+---> In another terminal:
+        ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/scripts
+        ---> mkdir EMG_DATA
+        ---> cd EMG_DATA
+        ---> mkdir Closing
+        ---> mkdir Opening
+        ---> mkdir Rest
+---> For example if you want to gather data about closing phase of the hand:
+        ---> cd Closing
+        ---> rosbag record --duration=0.55 /myo_raw/myo_emg
+             You Press "Invio" and it will records for the next 0.55 seconds the motion of the
+             hand (in this case it is the muscle's activity).
+             So in this time you have to close the hand
+---> Opening phase of the hand:
+        ---> cd Opening
+        ---> rosbag record --duration=0.55 /myo_raw/myo_emg
+---> Rest phase of the hand:
+        ---> cd Rest
+        ---> rosbag record --duration=0.55 /myo_raw/myo_emg
+---> After i have recorded the data, create file bag_to_csv.py inside Closing folder that do the 
+     following thing:
+     It creates a folder with a bag file and a csv file ( we are interested in the csv file that
+     contains the data. OPEN THIS FILE in TXT MODE)
+---> Inside the folder created delete the bag file
+---> Create a folder inside Closing named Data and put there all the csv files (rename everyone to
+     not get in confusion e.g c1,c2,c3... (Closing1, Closing2,Closing3))
+---> DO THIS PROCEDURE ALSO FOR OPENING AND REST FOLDER
+---> Now we will train a neural network with our data provided
+---> Go to the directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/
+     scripts
+---> Create a file emg_ML.py and set inside the file the proper paths to the data of closing,
+     opening,rest.
+     ---> /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/scripts/EMG_data/
+          Closing/Data/c
+     ---> /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/scripts/EMG_data/
+          Opening/Data/o
+     ---> /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/scripts/EMG_data/
+          Rest/Data/r
+    (NOTE THAT I HAVE ADDED /r,/c,/o FOR PURPOSE OF THE CODE)
+---> emg_ML.py creates the folder my_net that contains the checkpoints(that contains the weights 
+     of the neaural network created in emg_ML.py) for the file prediction.py whose aim is
+     to predict the state of the hand in real time
+---> Go to the directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/
+     scripts
+---> Create the file prediction.py that is a node that receives data from the node myo-rawNode.py
+     and publish a topic named pred that contains the state of the hand.
+     Together with the information of the grasping done by YOLO, another node will give the 
+     information of the action to the hand.
+---> Now we are ready to get the prediction of the state of the hand in real time and forward the 
+     information to the prosthetic hand together with the grasping informations of YOLO
+---> To provide information about the state of the hand let s do the following things:
+---> Keep the Bluetooth adapter connected with the computer and wear the EMG armband
+     with LOGO LED part positioned on the anterior part of the forearm with the STATUS LED
+     part looking to fingers
+---> In one terminal:
+       ---> roscore
+---> In another terminal:
+       ---> source activate virtual_environment
+       ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/scripts
+       ---> sudo chmod 777 /dev/ttyACM0 (to allow receiving data from EMG armband)
+       ---> rosrun ros_myo myo-rawNode.py (or run with python myo-rawNode.py)
+       ---> I start to make gestures with the hand (closing,opening,rest)
+---> In another terminal:
+        ---> rostopic list
+        ---> rostopic echo /myo_raw/myo_emg (to see the data)
+---> In another terminal:
+        ---> source activate virtual_environment
+        ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/scripts
+        ---> sudo chmod +x prediction.py
+        ---> python prediction.py
++ To see the Analysis of The Muscle Activity on jupyter notebook:
+---> Go to directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/scripts
+     Here there are the images and the file of the analysis
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+---> source activate virtual_environment
+---> conda install jupyter
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/ros_myo/scripts
+---> jupyter notebook
+
+
+
+- YOLO NETWORK
+---> To download software for YOLO go to site https://github.com/llSourcell/YOLO_Object_Detection
+---> To program with YOLO see https://towardsdatascience.com/implementing-yolo-on-a-custom-
+     dataset-20101473ce53
+
+
++ USEFUL LINKS TO INSTALL CUDA,CUDNN,DARKNET
+---> https://www.youtube.com/watch?v=TP67icLSt1Y (train YOLOv3)
+---> https://www.youtube.com/watch?v=tE7oIKyWP38 (DARKNET, train and other tips, CUDA, CUDNN, 
+     OPENCV)
+---> https://pjreddie.com/darknet/yolo/#demo (DARKNET)
+---> https://pjreddie.com/darknet/install/#cuda (DARKNET, CUDA , OPENCV)
+---> https://gist.github.com/Brainiarc7/470a57e5c9fc9ab9f9c4e042d5941a40 (CUDA INSTALL SYMLINKS 
+     AND CUDNN)
+
++ INSTALL CUDA
+---> GPU: NVIDIA GeForce 9600M GT
+---> Computanional capability: 1.1 (11)
+---> CUDA version associated with this computanional capability: 6.5
+---> NVIDIA DRIVERS SUPPORTED: nvidia-340.107
+---> Open terminal
+---> nvidia-smi
+---> sudo apt-get install build-essential
+---> sudo apt-get update
+---> sudo apt-get upgrade
+---> Go to https://developer.nvidia.com/cuda-toolkit-archive
+---> Download Cuda Toolkit 6.5 (take version 14.04 deb)
+---> It will appear a window, choose save
+---> You will find the package inside Scaricati
+---> Open it with GDebi and install it
+---> sudo apt-get update
+---> sudo apt install aptitude
+---> aptitude search cuda
+---> sudo apt install cuda-toolkit-6-5 
+---> ls /usr/local/cuda-6.5/bin/
+---> sudo nano /etc/environment
+---> Go to the right and after the last path add : and then add /usr/local/cuda-6.5/bin/
+---> Press Ctrl+O to save file, Invio, Ctrl+X (to exit)
+---> sudo nano /etc/environment
+---> Add in a new row LD_LIBRARY_PATH="/usr/local/cuda-6.5/lib64"
+---> Press Ctrl+O to save file, Invio, Ctrl+X (to exit)
+---> sudo reboot
+---> Open Terminal
+---> nvcc -V (to see version of CUDA installed)
+---> sudo apt install torsocks
+
+
++ INSTALL CUDNN 
+---> For CUDA 6.5 i need version CUDNN v2
+---> The NVIDIA CUDA Deep Neural Network library (cuDNN) is a GPU-accelerated library of 
+     primitives for deep neural networks.
+---> cuDNN provides highly tuned implementations for standard routines such as forward and 
+     backward convolution, pooling, normalization, and activation layers. 
+---> Using the cuDNN package, you can increase training speeds by upwards of 44%
+---> Go to https://developer.nvidia.com/rdp/cudnn-archive
+---> Click on  Download cuDNN v2 (March 17,2015), for CUDA 6.5 and later
+---> Click on cuDNN v2 Library for Linux
+---> You will find the package of CUDNN in Scaricati
+---> Open Terminal
+---> cd Scaricati
+---> tar -xzvf cudnn-6.5-linux-x64-v2.tgz
+---> sudo chmod 777 /usr/local
+---> From Scaricati copy the file cudnn-6.5-linux-x64-v2 in /usr/local
+---> sudo cp -P /usr/local/cudnn-6.5-linux-x64-v2/cudnn.h /usr/local/cuda-6.5/include
+---> sudo cp -P /usr/local/cudnn-6.5-linux-x64-v2/libcudnn* /usr/local/cuda-6.5/lib64/
+---> sudo chmod a+r /usr/local/cuda-6.5/lib64/libcudnn*
+---> sudo chmod a+r /usr/local/cuda-6.5/include/cudnn.h
+---> sudo reboot
+
+
+
++ INSTALL DARKNET (USE OF THE CPU, OPENCV INCLUDED IN MAKEFILE)
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+---> git clone https://github.com/pjreddie/darknet
+---> Go to directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet
+---> Open file named Makefile with gedit
+---> Change:
+     ---> GPU=0
+     ---> CUDNN=0
+     ---> OPENCV=1
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet
+---> make
+---> To see if the installation was done correctly type:
+     ---> ./darknet
+---> If the output is:
+     usage: ./darknet <function>
+     ALL WORK!
+---> To test if OpenCV works properly:
+     ---> ./darknet imtest data/eagle.jpg
+     If you get a bunch of windows with eagles in them you've succeeded! 
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet
+---> wget https://pjreddie.com/media/files/yolov3.weights (YOLOV3)
+---> To test yolov3-tiny on a image and see bounding boxes:
+     ---> ./darknet detect cfg/yolov3.cfg yolov3.weights data/dog.jpg
+---> In the directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet
+     you will find a file called predictions.jpg that is the image with bounding boxes
+---> wget https://pjreddie.com/media/files/yolov3-tiny.weights (YOLOV3-TINY)
+---> To test yolov3-tiny on a image and see bounding boxes:
+     ---> ./darknet detect cfg/yolov3-tiny.cfg yolov3-tiny.weights data/dog.jpg
+---> In the directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet
+     you will find a file called predictions.jpg that is the image with bounding boxes
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+---> catkin_make
+---> catkin_make install
+---> source devel/setup.bash
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+---> python -m pip install darknet
+     ---> import darknet
+
+
++ MODELS
+---> yolov3
+---> yolov3-tiny (faster than yolov3 but less accuracy)
+---> yolov2-tiny (a bit faster than yolov3-tiny)
+     ---> wget https://pjreddie.com/media/files/yolov2-tiny.weights
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+---> catkin_make
+---> catkin_make install
+---> source devel/setup.bash
+
+
++ YOLOV3 AND DETECTION OF CLASSES IN A IMAGE
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet
+---> Let's see how yolov3 detect the classes in a image
+---> You have to go in the directory /home/destiny/anaconda3/envs/virtual_environment/
+     catkin_ws/src/darknet/data and look for an image to analyze (e.g dog.jpg)
+---> ./darknet detect cfg/yolov3.cfg yolov3.weights data/dog.jpg
+---> In the directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet
+     you will find a file called predictions.jpg that is the image with bounding boxes
+
++ YOLOV3 AND DETECTION OF CLASSES ANALYZING MULTIPLE IMAGES
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet
+---> You have to go in the directory /home/destiny/anaconda3/envs/virtual_environment/
+     catkin_ws/src/darknet/data and look for some images
+---> ./darknet detect cfg/yolov3.cfg yolov3.weights
+---> The terminal will ask you for the path of the image you want to analyze
+---> Example:
+---> data/eagle.jpg
+---> data/giraffe.jpg
+---> and so on
+---> In the directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet
+     you will find a file called predictions.jpg that is the LAST IMAGE with bounding boxes
+
++ CHANGING THE DETECTION THRESHOLD
+---> By default, YOLO only displays objects detected with a confidence of 25% (0.25) or higher
+---> You can change this by passing the -thresh <val> flag to the yolo command
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet
+---> ./darknet detect cfg/yolov3.cfg yolov3.weights data/dog.jpg -thresh 0.80
+---> IN THIS WAY I WILL DETECT CLASSE ON THE IMAGE DOG.JPG ONLY IF CONFIDENCE IS 80% OR HIGHER
+
+
++ REAL-TIME DETECTION ON A WEBCAM
+---> Best performance with Darknet with CUDA, OpenCV, CUDNN
+---> To see the webcames attached to our systems:
+     --->  ls -ltrh /dev/video*
+---> To run a demo with our webcam:
+     ---> ./darknet detector demo cfg/coco.data cfg/yolov2-tiny.cfg yolov2-tiny.weights
+---> TO DO THE DETECTION WITH OTHER DEVICES (SUCH AS PUPIL OR OTHERS):
+     ---> ./darknet detector demo cfg/coco.data cfg/yolov2-tiny.cfg yolov2-tiny.weights 
+          -c 1 
+          (1 is the flag associated with the a certain device)
+
+
+
++ YOLO V3 FOR ROS: REAL-TIME OBJECT DETECTION FOR ROS
+* OVERVIEW
+---> Go to https://github.com/kanezaki/darknet_ros
+---> This is a ROS package developed for object detection in camera images.
+---> You only look once (YOLO) is a state-of-the-art, real-time object detection system.
+---> In the following ROS package you are able to use YOLO on GPU and CPU.
+---> We will use CPU
+---> The pre-trained model of the convolutional neural network is able to detect pre-trained 
+     classes including the data set from VOC and COCO (e.g. aeroplane, bicycle, bird, boat, 
+     bottle, bus, car, cat, chair, cow, dining table, dog, horse, motorbike, person, potted plant, 
+     sheep, sofa, train and tv monitor).
+---> You can also create a network with your own detection
+
+* INSTALL DARKNET_ROS
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src
+---> git clone --recursive https://github.com/pushkalkatara/darknet_ros
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+---> Go to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+---> Open Makefile and set OpenCV=1, LIBSO=1 and save
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+---> make
+---> To see if the installation was done correctly type:
+     ---> ./darknet
+---> If the output is:
+     usage: ./darknet <function>
+     ALL WORK!
+---> To test if OpenCV works properly:
+     ---> ./darknet imtest data/eagle.jpg
+---> If you get a bunch of windows with eagles in them you've succeeded! 
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+---> wget https://pjreddie.com/media/files/yolov3.weights (YOLOV3)
+---> To test yolov3-tiny on a image and see bounding boxes:
+     ---> ./darknet detect cfg/yolov3.cfg yolov3.weights data/dog.jpg
+---> In the directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet you will find a file called predictions.jpg that is the image with bounding boxes
+---> wget https://pjreddie.com/media/files/yolov3-tiny.weights (YOLOV3-TINY)
+---> To test yolov3-tiny on a image and see bounding boxes:
+     ---> ./darknet detect cfg/yolov3-tiny.cfg yolov3-tiny.weights data/dog.jpg
+---> In the directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet you will find a file called predictions.jpg that is the image with bounding boxes
+---> yolov2-tiny (a bit faster than yolov3-tiny)
+     ---> wget https://pjreddie.com/media/files/yolov2-tiny.weights
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet/src
+---> rm -rf unistd.h
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+---> catkin_make -DCMAKE_BUILD_TYPE=Release
+---> catkin_make install
+---> source devel/setup.bash
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+---> python -m pip install darknet
+     ---> import darknet
+
+
+* USE YOUR OWN DETECTION OBJECTS
+---> In order to use your own detection objects you need to provide your weights and your cfg file 
+     inside the directories:
+
+     ---> catkin_workspace/src/darknet_ros/darknet_ros/yolo_network_config/weights/
+     ---> catkin_workspace/src/darknet_ros/darknet_ros/yolo_network_config/cfg/
+
+---> In addition, you need to create your config file for ROS where you define the names of the 
+     detection objects. You need to include it inside:
+
+     ---> catkin_workspace/src/darknet_ros/darknet_ros/config/
+
+---> Then in the launch file you have to point to your new config file in the line:
+
+---> <rosparam command="load" ns="darknet_ros" file="$(find darknet_ros)/config/
+     your_config_file.yaml"/>
+
+
+* BASIC USAGE
+---> In order to get YOLO ROS: Real-Time Object Detection for ROS to run with your robot, you will 
+     need to adapt a few parameters. 
+---> It is the easiest if duplicate and adapt all the parameter files that you need to change from 
+     the darkned_ros package.
+---> These are specifically the parameter files in config and the launch file from the launch 
+     folder.
+
+* ROS RELATED PARAMETERS
+---> You can change the names and other parameters of the publishers, subscribers and actions 
+     inside darkned_ros/config/ros.yaml.
+
++ Subscribed Topics
+
+---> /camera_reading ([sensor_msgs/Image])
+---> The camera measurements.
+
++ Published Topics
+
+---> object_detector ([std_msgs::Int8])
+---> Publishes the number of detected objects.
+
+---> bounding_boxes ([darknet_ros_msgs::BoundingBoxes])
+---> Publishes an array of bounding boxes that gives information of the position and size of the 
+     bounding box in pixel coordinates.
+
+---> detection_image ([sensor_msgs::Image])
+---> Publishes an image of the detection image including the bounding boxes.
+
++ Actions
+
+---> camera_reading ([sensor_msgs::Image])
+---> Sends an action with an image and the result is an array of bounding boxes.
+
+* DETECTION RELATED PARAMETERS
+---> You can change the parameters that are related to the detection by adding a new config file 
+     that looks similar to darkned_ros/config/yolo.yaml.
+
+---> image_view/enable_opencv (bool)
+---> Enable or disable the open cv view of the detection image including the bounding boxes.
+
+---> image_view/wait_key_delay (int)
+---> Wait key delay in ms of the open cv window.
+
+---> yolo_model/config_file/name (string)
+---> Name of the cfg file of the network that is used for detection. The code searches for this 
+     name inside darkned_ros/yolo_network_config/cfg/.
+
+---> yolo_model/weight_file/name (string)
+---> Name of the weights file of the network that is used for detection. The code searches for 
+     this name inside darkned_ros/yolo_network_config/weights/.
+
+---> yolo_model/threshold/value (float)
+---> Threshold of the detection algorithm. It is defined between 0 and 1.
+
+---> yolo_model/detection_classes/names (array of strings)
+---> Detection names of the network used by the cfg and weights file inside darkned_ros/
+     yolo_network_config/.
+
+
+* INTRODUCTION YOLO
+---> YOLO (You Only Look Once), is a network for object detection
+---> The object detection task consists in determining the location on the image where certain 
+     objects are present, as well as classifying those objects
+---> YOLO, does it all with a single neural network
+---> Object detection as a single regression problem, straight from image pixels to bounding box 
+     coordinates and class probabilities.
+---> So, to put it simple, you take an image as input, pass it through a neural network that looks 
+     similar to a normal CNN, and you get a vector of bounding boxes and class predictions in the 
+     output.
+---> The first step to understanding YOLO is how it encodes its output. 
+---> The input image is divided into an S x S grid of cells. (13x13)
+---> For each object that is present on the image, one grid cell is said to be “responsible” 
+     for predicting it.
+---> That is the cell where the center of the object falls into.
+---> Each grid cell predicts B bounding boxes as well as C class probabilities.
+---> The bounding box prediction has 5 components: (x, y, w, h, confidence). 
+---> The (x, y) coordinates represent the center of the box, relative to the grid cell location 
+     (remember that, if the center of the box does not fall inside the grid cell, than this cell 
+     is not responsible for it).
+---> These coordinates are normalized to fall between 0 and 1. The (w, h) box dimensions are also 
+     normalized to [0, 1], relative to the image size
+---> Confidence reflects the presence or absence of an object of any class. It
+     tells us how certain it is that the predicted bounding box actually encloses some object.
+---> Remember that each grid cell makes B of those predictions, so there are in total S x S x B * 
+     5 outputs related to bounding box predictions.
+---> Adding the class predictions to the output vector, we get a S x S x (B * 5 +C) tensor as 
+     output.
+---> The network structure looks like a normal CNN, with convolutional and max pooling layers, 
+     followed by 2 fully connected layer
+---> MAX POOLING: A pooling layer is another building block of a CNN. Pooling. Its function is to 
+     progressively reduce the spatial size of the representation to reduce the amount of 
+     parameters and computation in the network. Pooling layer operates on each feature map 
+     independently. The most common approach used in pooling is max pooling
+---> FEATURE MAP: The feature map is the output of one filter applied to the previous layer. A 
+     given filter is drawn across the entire previous layer, moved one pixel at a time. Each 
+     position results in an activation of the neuron and the output is collected in the feature map
+     A feature map is formed by different units in a CNN that share the same weights and biases
+---> CONVOLUTIONAL LAYER: The term convolution refers to the mathematical combination of two 
+     functions to produce a third function. It merges two sets of information. In the case of a 
+     CNN, the convolution is performed on the input data with the use of a filter or kernel (these 
+     terms are used interchangeably) to then produce a feature map.
+---> FILTERS: In convolutional (filtering and encoding by transformation) neural networks (CNN) 
+     every network layer acts as a detection filter for the presence of specific features or 
+     patterns present in the original data. The first layers in a CNN detect (large) features that 
+     can be recognized and interpreted relatively easy
+---> YOLO predicts multiple bounding boxes per grid cell. At training time we only want one 
+     bounding box predictor to be responsible for each object. We assign one predictor to be 
+     “responsible” for predicting an object based on which prediction has the highest confidence 
+     score
+
+
++ SOME NOTATIONS
+---> BATCH: number images loaded for the "iteration" (suppose 64) in the forward pass to compute a 
+     gradient and update the weights via backpropagation.
+---> SUBDIVISION =8 -> Split batch into 8 "mini-batches" so 64/8 = 8 images per "minibatch" and 
+     this get sent to the gpu for process.
+     That will be repeated 8 times until the batch is completed and a new itereation will start 
+     with 64 new images
+---> NUM= number of anchors
+---> ANCHORS: most bounding boxes have certain height-width ratios. So instead of directly 
+     predicting a bounding box, YOLOv2 (and v3) predict off-sets from a predetermined set of boxes 
+     with particular height-width ratios - those predetermined set of boxes are the anchor boxes.
+---> HEIGHT AND WIDTH: height and the width tell you what's the network resolution
+---> STRIDE: Stride is the number of pixels a convolutional filter moves, like a sliding window, 
+     after passing on the weighted average value of all the pixels it just covered.
+---> PAD: Padding allows us to design deeper networks. Without padding, reduction in volume size 
+     would reduce too quickly. Padding actually improves performance by keeping information at the 
+     borders. Padding is a term relevant to convolutional neural networks as it refers to the 
+     amount of pixels added to an image when it is being processed by the kernel of a CNN. For 
+     example, if the padding in a CNN is set to zero, then every pixel value that is added will be 
+     of value zero.
+---> IOU: Intersection over Union is an evaluation metric used to measure the accuracy of an 
+     object detector on a particular dataset
+---> mAP (mean average precision) : mean value of average precisions for each class
+
+
+
+* TRAIN YOLOV2-TINY ON OWN CUSTOM OBJECTS
+---> THE AIM is to re-train our neural network with only the three classes we need.
+     Once we have done it, we have to set inside the package darknet_ros the yaml file,
+     launch file, cfg file, weights. The new ones of these files you will find in darknet folder 
+     inside darknet_ros package. Just copy them in the right place in the folder darknet_ros 
+     inside the package darknet_ros
+
+* DATA COLLECTION
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment
+---> pip install pycocotools
+---> Go to http://cocodataset.org/#download and download "2017 train images"
+     (that is the coco dataset for training) and the 2017 Train/Val annotations
+---> From Scaricati copy the unzipped file train2017 and annotations
+     (annotation file for object detection) in
+     /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+---> In Scaricati delete the file zip train2017 and  zip annotations_trainval2017
+---> In /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet:
+     ---> Create a folder named downloaded_images (this will contain the images 
+          of the classes we want to analyze, hence fork, banana and orange)
+     ---> Create a file python named extract_images_coco
+          
+          from pycocotools.coco import COCO
+	  import requests
+
+          coco = COCO('cocoapi/annotations/instances_train2017.json')
+          cats = coco.loadCats(coco.getCatIds())
+          nms=[cat['name'] for cat in cats]
+          print('COCO categories: \n{}\n'.format(' '.join(nms)))
+
+          catIds = coco.getCatIds(catNms=['person'])
+          imgIds = coco.getImgIds(catIds=catIds )
+          images = coco.loadImgs(imgIds)
+          print("imgIds: ", imgIds)
+          print("images: ", images)
+
+          for im in images:
+              print("im: ", im)
+              img_data = requests.get(im['coco_url']).content
+              with open('downloaded_images/' + im['file_name'], 'wb') as handler:
+                   handler.write(img_data)
+
+
+---> Open it and go at the line catIds = coco.getCatIds(catNms=['fork'])
+     change the name fork with the classe you are interested and run the code. It will download
+     the images related to the class in the folder named downloaded_images (the images are
+     in format .jpg)
+---> The images of the training set are orange, fork, banana
+---> PAY ATTENCTION AT THE RESOLUTION (IT MUST BE 416x416). IN CASE IMAGES DO NOT HAVE THIS
+     RESOLUTION, DO THE IMAGE RESIZE
+
+---> DATA ANNOTATION (bounding boxes and labels):
+---> Go to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/data and create folder obj
+
+* IF YOU HAVE FEW IMAGES:
+---> Use YOLO_MARK that is a GUI for marking bounded boxes of objects in images for 
+     training Yolo v3 and Yolo v2
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+---> git clone https://github.com/AlexeyAB/Yolo_mark.git
+---> cd Yolo_mark
+---> cmake .
+---> make
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+---> catkin_make
+---> catkin_make install
+---> source devel/setup.bash
+---> Go to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet/
+     Yolo_mark/x64/Release/data/img
+     ---> Delete all files from directory inside img (images and txt file where there are the  
+          annotations)
+     ---> Put your .jpg-images inside the folder img (take the images from the folder
+          downloaded_images)
+---> Go to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet/
+     Yolo_mark/x64/Release/data
+     ---> Open file obj.names and write the names of the classes (one for each line):
+          fork
+          banana
+          orange
+     ---> Open file obj.data and change number of classes (objects for detection)
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet/
+     Yolo_mark
+---> Now that you’re ready to go, run
+     ---> sudo chmod 777 /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+          darknet_ros/darknet/Yolo_mark/linux_mark.sh
+     ---> ./linux_mark.sh  (you have to do the bounding boxes manually around the objects of 
+                           interest)
+
+* IF YOU HAVE LOT OF IMAGES (AND YOU HAVE ALREADY THE ANNOTATIONS BECAUSE YOU DOWNLOADED
+  THEM FROM THE COCO DATASET SITE) LIKE 6843 AS IN OUR CASE:
+---> Go to directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet and create a folder named extracted_annotations 
+---> Go to directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet/data and create a folder named obj and copy here inside the images inside the folder
+     downloaded_images that is in the directory /home/destiny/anaconda3/envs/virtual_environment/
+     catkin_ws/src/darknet_ros/darknet
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+---> git clone https://bitbucket.org/yymoto/coco-to-yolo/src/master/ 
+     (cocotoyolo.jar will create the labels of our classes and also an image_list.txt that 
+      corresponds at our train.txt that contains the list of the images of our classes with the 
+      relative path. You will find everything inside the folder extracted_annotations)
+---> Go to https://bitbucket.org/yymoto/coco-to-yolo/src/master/ and click on
+     http://commecica.com/wp-content/uploads/2018/07/cocotoyolo.jar to download cocotoyolo.jar
+---> Go to Scaricati and copy cocotoyolo.jar in /home/destiny/anaconda3/envs/virtual_environment/
+     catkin_ws/src/darknet_ros/darknet and delete the file from Scaricati
+---> java -jar cocotoyolo.jar "annotations/instances_train2017.json" "data/obj/" "fork, banana, 
+     orange" "extracted_annotations"
+     (This command will provide us the annotation files and image_list.txt)   
+  
+
+---> ASSEMBLE DATA AND CONFIGURATION FILES
+
+* IF YOU HAVE USED YOLO_MARK:
+---> Go to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/build/darknet/data and create folder named obj
+---> Go to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet/
+     Yolo_mark/x64/Release/data/img
+     ---> you should have all of your images and an accompanying .txt file (annotations)
+     ---> copy all those files to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+          darknet_ros/darknet/build/darknet/x64/data/obj
+          and in /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+          darknet_ros/darknet/data/obj
+---> Go to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/Yolo_mark/x64/Release/data
+     ---> you should have train.txt, obj.names, and obj.data
+     --->  Copy those files to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+           darknet_ros/darknet/build/darknet/x64/data and  in 
+           /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+           darknet_ros/darknet/data
+---> Copy yolov2-tiny.cfg from /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/cfg in /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/Yolo_mark/x64/Release and rename it in yolov2-tiny-obj.cfg
+---> Copy yolov2-tiny-obj.cfg also in /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/
+     src/darknet_ros/darknet and in home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/cfg
+
+* IF YOU HAD THE CASE LOT OF IMAGES SO YOU DID NOT USE YOLO_MARK:
+---> Go to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/build/darknet/data and create folder named obj
+---> Go to directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet/build/darknet/x64/data
+---> Create file obj.names with objects names - each in new line:
+     fork
+     banana
+     orange
+---> Create file obj.data with the following lines: (where you have to set the number of classes 
+                                                     only)
+     classes= 3
+     train  = data/train.txt
+     valid  = data/train.txt
+     names = data/obj.names
+     backup = backup/
+---> Copy files obj.names and obj.data also in /home/destiny/anaconda3/envs/virtual_environment/  
+     catkin_ws/src/darknet_ros/darknet/data
+---> Go to directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet where there is the folder downloaded_images
+     ---> inside it, you should have all of your images
+     ---> copy all those images to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+          darknet_ros/darknet/build/darknet/x64/data/obj
+---> From folder extracted_annotations that is in /home/destiny/anaconda3/envs/virtual_environment/
+     catkin_ws/src/darknet_ros/darknet copy the file image_list.txt in 
+     /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet/build/darknet/x64/data and rename it in train.txt. This file will contain
+     filenames of your images, each filename in NEW LINE, with path    
+     relative to ./darknet, for example containing:
+     data/obj/img1.jpg
+     data/obj/img2.jpg
+     data/obj/img3.jpg
+---> Copy the file train.txt also in /home/destiny/anaconda3/envs/virtual_environment/  
+     catkin_ws/src/darknet_ros/darknet/data
+---> From folder extracted_annotations that is in /home/destiny/anaconda3/envs/virtual_environment/
+     catkin_ws/src/darknet_ros/darknet  delete the file image_list.txt and copy all the remaining 
+     files .txt (that contain the annotations) inside the folder
+     /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/build/darknet/x64/data/obj
+---> At this point replace in /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/data the folder obj with this new one that contains images 
+     and annotations (the new one is the folder obj inside 
+     /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/build/darknet/x64/data/obj )
+---> Copy yolov2-tiny.cfg from /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/cfg into the same folder and rename it as yolov2-tiny-obj.cfg and copy it 
+     also in /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/
+     src/darknet_ros/darknet and rename it in yolov2-tiny-obj.cfg
+---> In /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet delete extracted_annotations 
+
+
+---> CALCULATE ANCHORS
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+---> ./darknet detector calc_anchors data/obj.data -num_of_clusters 9 -width 416 -height 416
+     (The more clusters, the larger mean IoU becomes)
+     (this will create a file .txt in /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/
+     src/darknet_ros/darknet named anchors.txt that contains the values for the anchors)
+---> Go to /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+     and open file yolov2-tiny-obj.cfg 
+---> Modify in the file yolov2-tiny-obj.cfg the values of the anchors and save the file
+---> Substitute in /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet/cfg the old fie yolov2-tiny-obj.cfg with the new one from /home/destiny/anaconda3/
+     envs/virtual_environment/catkin_ws/src/darknet_ros/darknet 
+
+---> MODIFY CONFIG FILES
+---> Go in /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/cfg and search yolov2-tiny-obj.cfg
+---> Set number of classes you’re training of yolov2-tiny-obj.cfg (in this case we have 3 classes)
+---> Set filter value equal to (classes + 5)*5 in yolov2-tiny-obj.cfg
+     (in the last layer, see convolutional part at the end of the file)
+---> change line batch to batch=64 (FOR TRAINING THE NETWORK)
+---> change line subdivisions to subdivisions=8 (FOR TRAINING THE NETWORK)
+---> change also the threshold if you want (but 0.6 ---> 60% is ok)
+---> PAY ATTENCTION AT NUMBER OF ITERATIONS (max_batches) (should be classes*2000)
+---> change the value of steps in this way: the value before "," is 80% of max_batches
+     and the value after the "," is 90% of max_batches
+---> Substitute in /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet the file yolov2-tiny-obj with the new one
+
+---> PRE-TRAINED WEIGHTS
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+---> Download the pre-trained weights:
+     ---> ./darknet partial cfg/yolov2-tiny.cfg yolov2-tiny.weights yolov2-tiny.conv.13 13
+---> This command will create a file named yolov2-tiny.conv.13 in
+     /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+---> Copy the file in directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet/build/darknet/x64
+
+---> TRAINING
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+     ---> ./darknet detector train data/obj.data yolov2-tiny-obj.cfg yolov2-tiny.conv.13 -dont_show
+---> The number 13 tells how many layer you want, you want e.g. just before the final layer which 
+     does the detection.
+---> There are many factors that influence the time of the training phase such as:
+     ---> number of layers
+     ---> number of filters for each layer
+     ---> filter size
+     ---> dimension of the input images
+     ---> size of the dataset
+---> NOTE: If you have a CUDA out of memory error you may try to increase the number of 
+     subdivisions or change the batch size or change the network-resolution.
+
+---> UNDERSTANDING YOLOV2 TRAINING OUTPUT
+---> NOTE: Learning rate will slowly increase from 0 to 0.001 within the number of epochs 
+---> Batch Output: (Analysis)
+        9798: 0.370096, 0.451929 avg, 0.001000 rate, 3.300000 seconds, 627072 images
+     ---> 9768: indicates the current training iteration/batch
+     ---> 0.370096: is the total loss
+     ---> 0.451929 avg: is the average loss error, which should be as low as possible. As a rule 
+          of thumb, once this reaches below 0.060730 avg, you can stop training (IMPORTANT)
+     ---> 0.001000 rate: represents the current learning rate, as defined in the .cfg file
+     ---> 3.300000 seconds: represents the total time spent to process this batch
+     ---> The 627072 images: total amount of images used during training so far
+---> Sudvision Output: (Analysis)
+        Region Avg IOU: 0.326577, Class: 0.742537, Obj: 0.033966, No Obj: 0.000793, Avg Recall: 
+        0.12500, count: 8
+     ---> Region Avg IOU: 0.326577 is the average of the IOU of every image in the current 
+                          subdivision. A 32,66% overlap in this case, this model still requires 
+                          further training.
+     ---> Avg Recall: 0.12500 is defined in code as recall/count, and thus a metric for how many 
+                      positives YOLOv2 detected out of the total amount of positives in this 
+                      subdivision. In this case only one of the eight positives was correctly 
+                      detected.
+     ---> count: 8 is the amount of positives (objects to be detected) present in the current 
+                 subdivision of images (subdivision with size 8 in our case)
+
+---> WHEN STOP TRAINING
+---> The average loss (error) value (you can recognise it --> "some numbers avg") that gets 
+     reported after every training iteration should be as low as possible.
+---> The YOLOv2 is configured so that weights of the model are saved into the backup folder every 
+     100, 200, 300, 400, 500 and eventually every multiple of 1000 iterations. 
+     (In this case are saved every 100 ierations)
+---> The name of the file saved is: yolov2-tiny-obj_last.weights. In order to not have the file 
+     always substituted from the next file saved, change the name to copy yolov2-tiny-
+     obj_2000.weights for example
+---> If training ever were to be interrupted, you can continue training from the last 
+     saved .weights. Just do the following:
+     ---> copy yolov2-tiny-obj_300.weights from /home/destiny/anaconda3/envs/virtual_environment/
+          catkin_ws/src/darknet_ros/darknet/backup to 
+          /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet/x64
+          and in /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+          darknet
+     ---> source activate virtual_environment
+     ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+     ---> ./darknet detector train data/obj.data cfg/yolov2-tiny-obj.cfg backup/yolov2-tiny-
+          obj_<iteration>.weights -dont_show
+          (iteration ----> look in the backup and choose the number of iteration where the weights 
+          offer best performance)
+          (You must have the files in the right folders)
+---> Usually sufficient 2000 iterations for each class(object). But for a more precise definition 
+     when you should stop training, use the following manual:
+     ---> During training, you will see varying indicators of error, and you should stop when no 
+          longer decreases, e.g 0.060730 avg:
+          9002: 0.211667, 0.060730 avg, 0.001000 rate, 3.868000 seconds, 576128 images Loaded: 
+          0.000000 seconds
+    ---> 9002 - iteration number (number of batch)
+    ---> 0.060730 avg - average loss (error) - the lower, the better
+---> When you see that average loss 0.xxxxxx avg no longer decreases at many iterations then you 
+     should stop training. (IMPORTANT)
+---> If training is stopped after for example 9000 iterations, to validate some of previous 
+     weights use this commands:
+
+     darknet.exe detector map data/obj.data yolov2-tiny-obj.cfg backup\yolov2-tiny-obj_7000.weights
+     darknet.exe detector map data/obj.data yolov2-tiny-obj.cfg backup\yolov2-tiny-obj_8000.weights
+     darknet.exe detector map data/obj.data yolov2-tiny-obj.cfg backup\yolov2-tiny-obj_9000.weights
+
+---> And compare last output lines for each weights (7000, 8000, 9000):
+---> Choose weights-file with the highest IoU (intersect of union) and mAP (mean average precision)
+---> You should take some of last .weights-files from /home/destiny/
+     anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet/backup
+     and choose the best of them (to put in darknet_ros) and  put it
+     in /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+---> At the moment the best .weights file is yolov2-tiny-obj_300.weights
+
+
+---> RESULTS
+---> To test your model, you’ll want to slightly modify your config file.
+---> In /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet 
+     ---> Change batch to 1 on line 2 of yolov2-tiny-obj.cfg (IMPORTANT AND DO NOT CHANGE NOTHING 
+          THEN)
+     ---> Change subdivisions to 1 on line 3 of yolov2-tiny-obj.cfg (IMPORTANT AND DO NOT CHANGE 
+          NOTHING THEN)
+---> Substitute in /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet/cfg the old fie yolov2-tiny-obj.cfg with the new one from /home/destiny/anaconda3/
+     envs/virtual_environment/catkin_ws/src/darknet_ros/darknet 
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+---> ./darknet detector test data/obj.data cfg/yolov2-tiny-obj.cfg yolov2-tiny-
+     obj_<iteration>.weights data/image.jpg  
+     (image ---> you decide the name according to the name of the image you want to analyse)
+     (iteration ----> look in the backup and choose the number of iteration where the weights 
+     offer best performance)
+     (You must have the files in the right folders)
+---> In our case: 
+     ./darknet detector test data/obj.data cfg/yolov2-tiny-obj.cfg yolov2-tiny-obj_300.weights 
+     data/banana.jpg
+     ( I have download an image with a banana and i have put it inside data folder)
+
+---> RUN A PREDICTION
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+---> ./darknet detect cfg/yolov2-tiny-obj.cfg backup/yolov2-tiny-obj_<iteration>.weights data/
+     image.png
+     (image ---> you decide the name according to the name of the image you want to analyse)
+     (iteration ----> look in the backup and choose the number of iteration where the weights 
+     offer best performance)
+     (You must have the files in the right folders)
+---> In our case: 
+     ./darknet detect cfg/yolov2-tiny-obj.cfg backup/yolov2-tiny-obj_300.weights 
+     data/banana.jpg
+     ( I have download an image with a banana and i have put it inside data folder)
+
+---> HOW TO IMPROVE OBJECT DETECTION:
+---> Before training:
+     ---> set flag random=1 in your .cfg-file - it will increase precision by training Yolo 
+     ---> desirable that your training dataset include images with objects at diffrent: scales, 
+          rotations, lightings, from different sides
+     ---> desirable that your training dataset include images with objects (without labels) that 
+          you do not want to detect - negative samples
+     ---> for training with a large number of objects in each image, add the parameter max=200 or 
+          higher value in the last layer [region] in your cfg-file 
+
+---> PREPARE FILE FOR DARKNET_ROS
+---> copy /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet
+     /backup/yolov2-tiny-obj_<iteration>.backup -> /home/destiny/anaconda3/envs/
+     virtual_environment/catkin_ws/src/darknet_ros/darknet_ros/yolo_network_config/
+     weights/yolov2-tiny-obj_<iteration>.weights
+     (in practice you have to rename yolov2-tiny-obj_<iteration>.backup in
+      yolov2-tiny-obj_<iteration>.weights)
+---> copy /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet/cfg/
+     yolov2-tiny-obj.cfg -> /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/
+     darknet_ros/darknet_ros/yolo_network_config/cfg/yolov2-tiny-obj.cfg
+---> create a file with this configuration in home/destiny/anaconda3/envs/virtual_environment/
+     catkin_ws/src/darknet_ros/darknet_ros/config/yolov2-tiny-obj.yaml: 
+       yolo_model:
+
+         config_file:
+           name: yolov2-tiny-obj.cfg
+         weight_file:
+           name: yolov2-tiny-obj_<iteration>.weights
+         threshold:
+           value: 0.5
+         detection_classes:
+           names:               (PUT IN THE SAME ORDER LIKE IN THE FILE OBJ.NAMES)
+              - fork
+              - banana
+              - orange
+
+---> Change launch file with appropriate file name yolov2-tiny-obj.yaml
+---> DUE TO NOT ENOUGH TIME TO TRAIN, WE HAVE DECIDED TO USE AGAIN yolov2-tiny.yaml
+
+
+
+
+* YOLOV2-TINY AND ROS WORKING
+---> source activate virtual_environment
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/darknet_ros/
+     yolo_network_config/weights
+---> wget https://pjreddie.com/media/files/yolov2-tiny.weights
+---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws
+---> catkin_make -DCMAKE_BUILD_TYPE=Release
+---> catkin_make install
+---> source devel/setup.bash
+---> Go to directory /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+     darknet_ros/config
+---> Open ros.yaml and modify the following thing:
+---> camera_reading:
+     topic: /camera/rgb/image_raw
+     in
+     camera_reading:
+     topic: /usb_cam/image_raw
+     (IF I HAVE DECIDED TO USE A NORMAL CAMERA INSTEAD OF PUPIL,
+      OTHERWISE PUT TOPIC RELATED TO PUPIL, SEE THE NAME DOING ROSTOPIC LIST)
+---> To see if YOLOv2-tiny and ROS are correctly working do the following commands:
+     ----> In one terminal:
+           ---> roscore
+     ----> In another terminal:
+           ---> source activate virtual_environment
+           ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/usb_cam/launch
+           ---> roslaunch usb_cam usb_cam-test.launch
+           OR:
+           ---> roslaunch pupil_ros_plugin pupil_ros.launch
+     ----> In another terminal:
+           ---> source activate virtual_environment
+           ---> cd /home/destiny/anaconda3/envs/virtual_environment/catkin_ws/src/darknet_ros/
+                darknet_ros/launch
+           ---> roslaunch darknet_ros darknet_ros.launch
+     ----> In another terminal:
+           ---> rostopic list
+
+
+
+
