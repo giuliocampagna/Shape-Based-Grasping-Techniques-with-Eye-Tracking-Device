@@ -4,3 +4,5 @@ All the project is performed in Ubuntu 16.04 LTS (Xenial). Basically it has been
 to work with the EMG armband) and darknet that is used as the framework for training YOLO, meaning it sets the architecture of the network. In the end, to connect everything we have installed ROS, an open-source, meta-operating system for robotic systems.
 
 
+
+![Image description](Overall_setup)
